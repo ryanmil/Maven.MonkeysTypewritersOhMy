@@ -3,7 +3,7 @@ package io.zipcoder;
 public class MonkeyTypewriter {
     public static void main(String[] args) {
         String introduction = "It was the best of times,\n" +
-                "it was the blurst of times,\n" +
+                "it was the worst of times,\n" +
                 "it was the age of wisdom,\n" +
                 "it was the age of foolishness,\n" +
                 "it was the epoch of belief,\n" +
@@ -24,15 +24,35 @@ public class MonkeyTypewriter {
         // For each Copier(one safe and one unsafe), create and start 5 monkeys copying the introduction to
         // A Tale Of Two Cities.
 
+        UnsafeCopier unsafeCopier = new UnsafeCopier(introduction);
+        SafeCopier safeCopier = new SafeCopier(introduction);
 
-        // This wait is here because main is still a thread and we want the main method to print the finished copies
-        // after enough time has passed.
-        try {
-            Thread.sleep(1000);
-        } catch(InterruptedException e) {
-            System.out.println("MAIN INTERRUPTED");
+        Thread[] theMonkeys = new Thread[5];
+        Thread[] theSquadOfMonkeys = new Thread[5];
+        for (int i = 0; i < theMonkeys.length; i++) {
+            theMonkeys[i] = new Thread(unsafeCopier);
+            theSquadOfMonkeys[i] = new Thread(safeCopier);
         }
 
-        // Print out the copied versions here.
+
+        for (Thread monkey : theMonkeys) {
+            monkey.start();
+        }
+        for (Thread monkey : theMonkeys) {
+            try { monkey.join(); } catch (Exception e) { }
+        }
+        System.out.println("\nUNSAFE:\n");
+        System.out.println(unsafeCopier.copied);
+
+
+
+        for (Thread monkey : theSquadOfMonkeys) {
+            monkey.start();
+        }
+        for (Thread monkey : theSquadOfMonkeys) {
+            try { monkey.join(); } catch (Exception e) { }
+        }
+        System.out.println("\nSAFE:\n");
+        System.out.println(safeCopier.copied);
     }
 }
